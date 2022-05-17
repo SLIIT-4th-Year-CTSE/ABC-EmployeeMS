@@ -1,18 +1,42 @@
-name: Docker Build Deploy
-on:
+name: employee microservice deploymenton:
   push:
-    branches: [master]
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  DOCKER_USER_NAME: ${{secrets.DOCKER_USER_NAME}}
+  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+  EMPLOYEE_REPO_NAME: ${{secrets.EMPLOYEE_REPO_NAME}}
+
 jobs:
-  build:
+  employee-service:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: run shell script
-        run: echo commit hash is ${{ github.sha }}
-      # - name: Login to Docker Hub
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.USERNAME }}
-      #     username: ${{ secrets.DOKER_TOKEN }}
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:${{ github.sha }}
+    - uses: actions/checkout@v2
+    - name: Work Dir
+      run: | 
+        echo $DOCKER_USER_NAME
+        echo $DOCKER_TOKEN
+        echo $EMPLOYEE_REPO_NAME
+    - name: Docker login
+      run: |
+        docker login -u $DOCKER_USER_NAME -p $DOCKER_TOKEN
+    - name: Build employee service docker image
+      run: docker build . --file Dockerfile -t "$DOCKER_USER_NAME/$EMPLOYEE_REPO_NAME:latest"
+    - name: Push employee service docker image
+      run: docker push "$DOCKER_USER_NAME/$EMPLOYEE_REPO_NAME:latest"
+
+  deploy:
+    needs: [employee-service]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: kubectl - Google Cloud GKE cluster.
+      uses: ameydev/gke-kubectl-action@master
+      env:
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+        ZONE_NAME: us-central1-c
+      with:
+        args: apply -f deployment/
