@@ -1,4 +1,5 @@
-name: employee microservice deploymenton:
+name: employee microservice deployment
+on:
   push:
     branches: [ master ]
   workflow_dispatch:
