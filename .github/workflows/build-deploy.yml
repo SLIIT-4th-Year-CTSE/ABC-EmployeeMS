@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_USER_NAME: ${{secrets.DOCKER_USERNAME}}
+  DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
   DOCKER_TOKEN: ${{secrets.DOCKER_TOKEN}}
   EMPLOYEE_REPO_NAME: ${{secrets.EMPLOYEE_REPO_NAME}}
 
@@ -16,16 +16,16 @@ jobs:
     - uses: actions/checkout@v2
     - name: Work Dir
       run: | 
-        echo $DOCKER_USER_NAME
+        echo $DOCKER_USERNAME
         echo $DOCKER_TOKEN
         echo $EMPLOYEE_REPO_NAME
     - name: Docker login
       run: |
-        docker login -u $DOCKER_USER_NAME -p $DOCKER_TOKEN
+        docker login -u $DOCKER_USERNAME -p $DOCKER_TOKEN
     - name: Build employee service docker image
-      run: docker build . --file Dockerfile -t "$DOCKER_USER_NAME/$EMPLOYEE_REPO_NAME:latest"
+      run: docker build . --file Dockerfile -t "$DOCKER_USERNAME/$EMPLOYEE_REPO_NAME:latest"
     - name: Push employee service docker image
-      run: docker push "$DOCKER_USER_NAME/$EMPLOYEE_REPO_NAME:latest"
+      run: docker push "$DOCKER_USERNAME/$EMPLOYEE_REPO_NAME:latest"
 
   deploy:
     needs: [employee-service]
