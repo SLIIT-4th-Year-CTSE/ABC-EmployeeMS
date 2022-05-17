@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: employee-app-pod
+  labels:
+    name: employee-app-pod
+    app: demo-abc-app
+
+spec:
+  containers:
+    - name: employee-app
+      image: drex7001/it19217796_api
+      ports:
+        - containerPort: 5000
