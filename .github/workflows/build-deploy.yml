@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_USER_NAME: ${{secrets.DOCKER_USER_NAME}}
+  DOCKER_USER_NAME: ${{secrets.DOCKER_USERNAME}}
   DOCKER_TOKEN: ${{secrets.DOCKER_TOKEN}}
   EMPLOYEE_REPO_NAME: ${{secrets.EMPLOYEE_REPO_NAME}}
 
